@@ -43,9 +43,76 @@ helm-charts/
 Current status:
 - Directory structure created
 - Backend API design written
+- Basic backend logic for alarms and poem generation implemented
 - Example Golang template files generated
 
 Next goals:
-- Implement backend logic for alarms and poem generation
 - Write Dockerfiles for backend and ai-service
 - Deploy to Kubernetes using provided manifests
+- Implement timezone-aware alarm scheduling
+- Enhance poem generation logic with LLaMA 3 integration
+
+
+UI / Frontend: AlarmPoet
+
+Framework:
+- Flutter (cross-platform mobile: iOS + Android)
+
+Screens:
+1. Home Screen
+   - Shows welcome message (single user, no login)
+   - Example: “Hello, Rohan! Ready to set your day?”
+
+2. Alarm Screen
+   - Inputs:
+     - Name (text)
+     - Alarm time (time picker, e.g., 08:00)
+     - Timezone (auto-detect or dropdown, e.g., Asia/Kolkata)
+     - Keywords (comma-separated, e.g., sunrise, hope)
+     - Generation mode (toggle: local / remote)
+   - Submit → POST /v1/alarms
+
+3. Alarm List Screen
+   - Displays all alarms:
+     - Name, time, timezone, keywords, poem preview, status
+   - Edit → opens alarm screen prefilled
+   - Delete → calls DELETE /v1/alarms/{alarm_id}
+   - Refresh / pull-to-refresh
+
+4. Poem Screen
+   - Shows generated poem
+   - Allows standalone generation → POST /v1/poems/generate
+
+Flutter Directory Structure:
+frontend/lib/
+  main.dart
+  screens/
+    home_screen.dart
+    alarm_screen.dart
+    alarm_list_screen.dart
+    poem_screen.dart
+  widgets/
+    alarm_card.dart
+    poem_card.dart
+  services/
+    api_service.dart → handles REST calls
+  models/
+    alarm.dart → alarm data model
+
+Features:
+- Store user name locally (no backend auth)
+- Auto-detect timezone with Flutter plugins
+- Use Material / Cupertino widgets
+- Show loading indicators and error handling
+- Minimal, clean, intuitive UI
+
+API Calls:
+- Create alarm → POST /v1/alarms
+- List alarms → GET /v1/alarms
+- Generate poem → POST /v1/poems/generate
+
+Next Steps:
+- Build Flutter widget boilerplates
+- Implement api_service.dart
+- Create alarm.dart model
+- Add animations and UX polish
