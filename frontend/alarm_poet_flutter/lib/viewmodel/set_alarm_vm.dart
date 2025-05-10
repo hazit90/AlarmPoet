@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
+import 'package:daylight/daylight.dart';
+import 'package:intl/intl.dart' show DateFormat;
 
 class SetAlarmVm extends ChangeNotifier {
   String _locationName = "Fetching location...";
@@ -32,6 +34,7 @@ class SetAlarmVm extends ChangeNotifier {
 
   Future<void> _initializeLocation() async {
     await fetchLocation();
+    await _fetchSunriseTime();
   }
 
   Future<void> fetchLocation() async {
@@ -47,7 +50,7 @@ class SetAlarmVm extends ChangeNotifier {
       if (!serviceEnabled) {
         _locationName = "Location services disabled";
         notifyListeners();
-        return; // Exit if the user does not enable location services
+        return;
       }
     }
 
@@ -58,20 +61,46 @@ class SetAlarmVm extends ChangeNotifier {
       if (permissionGranted != PermissionStatus.granted) {
         _locationName = "Location permission denied";
         notifyListeners();
-        return; // Exit if the user does not grant permissions
+        return;
       }
     }
 
     // Get the current location
     _locationData = await location.getLocation();
 
-    // Update the location name (you can use reverse geocoding here if needed)
+    // Update the location name
     _locationName =
-        "Lat: ${_locationData!.latitude}, Lon: ${_locationData?.longitude}";
+        "Lat: ${_locationData!.latitude}, Lon: ${_locationData!.longitude}";
     notifyListeners();
   }
 
+  Future<void> _fetchSunriseTime() async {
+    if (_locationData == null) return;
+
+    // Use the current location to calculate sunrise
+    final location = DaylightLocation(
+      _locationData!.latitude!,
+      _locationData!.longitude!,
+    );
+
+    final calculator = DaylightCalculator(location);
+    final today = DateTime.now().toUtc();
+
+    // Calculate sunrise for today
+    final sunrise = calculator.calculateEvent(
+      today,
+      Zenith.civil,
+      EventType.sunrise,
+    );
+
+    if (sunrise != null) {
+      _sunriseTime = sunrise.toLocal();
+      _alarmTime = _sunriseTime; // Set alarm time to sunrise time
+      notifyListeners();
+    }
+  }
+
   String _formatTime(DateTime time) {
-    return "${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}";
+    return DateFormat("HH:mm:ss").format(time);
   }
 }
