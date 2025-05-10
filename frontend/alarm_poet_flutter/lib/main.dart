@@ -1,4 +1,7 @@
+import 'package:alarm_poet_flutter/view/set_alarm_page.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'viewmodel/set_alarm_vm.dart'; // Import SetAlarmVm
 
 void main() {
   runApp(const MainApp());
@@ -9,11 +12,13 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+            create: (_) => SetAlarmVm()), // Provide SetAlarmVm
+      ],
+      child: const MaterialApp(
+        home: SetAlarmPage(), // Set LoginPage as the startup page
       ),
     );
   }
