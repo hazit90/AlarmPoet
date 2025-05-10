@@ -45,5 +45,13 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+    
+    <!-- Location usage descriptions -->
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>This app needs your location to provide alarm and notification features based on your position.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>This app needs access to your location at all times to trigger alarms even when the app is in the background.</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>This app requires your location always and when in use to ensure alarms work as expected.</string>
 </dict>
 </plist>
