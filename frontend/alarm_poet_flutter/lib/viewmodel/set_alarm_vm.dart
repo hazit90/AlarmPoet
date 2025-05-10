@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 class SetAlarmVm extends ChangeNotifier {
   String _locationName = "Current Location";
-  //e.g Tomomoroe at 6:38 am
   DateTime _sunriseTime = DateTime.now().subtract(const Duration(hours: 1));
   DateTime _alarmTime = DateTime.now().subtract(const Duration(hours: 1));
 
@@ -12,15 +11,21 @@ class SetAlarmVm extends ChangeNotifier {
 
   String get alarmString => _formatTime(_alarmTime);
 
+  DateTime get alarmTime => _alarmTime; // Added getter for alarmTime
+
   void setOffset(Duration offset) {
     _alarmTime = _sunriseTime.add(offset);
     notifyListeners();
   }
 
+  void setAlarmTime(DateTime alarmTime) {
+    _alarmTime = alarmTime;
+    notifyListeners();
+  }
+
   Future<void> updateLocationName() async {
-    //dummy code
     _locationName = "Current Location";
-    notifyListeners(); // Notify listeners to rebuild UI
+    notifyListeners();
   }
 
   String _formatTime(DateTime time) {

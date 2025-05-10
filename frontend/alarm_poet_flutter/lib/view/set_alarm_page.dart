@@ -61,11 +61,58 @@ class SetAlarmPage extends StatelessWidget {
                 const SizedBox(height: Insets.huge),
 
                 // ─── Alarm card ─────────────────────────────────────────────
-                _TimeRow(
-                  icon: Icons.alarm,
-                  iconColor: CustomColors.alarmRed,
-                  background: CustomColors.alarmRed,
-                  timeText: vm.alarmString,
+                GestureDetector(
+                  onTap: () async {
+                    final TimeOfDay? pickedTime = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.fromDateTime(vm.alarmTime),
+                      builder: (BuildContext context, Widget? child) {
+                        return Theme(
+                          data: Theme.of(context).copyWith(
+                            timePickerTheme: TimePickerThemeData(
+                              backgroundColor: CustomColors.lightSkyBlue,
+                              hourMinuteTextColor:
+                                  MaterialStateColor.resolveWith((states) =>
+                                      states.contains(MaterialState.selected)
+                                          ? Colors.white
+                                          : Colors.black),
+                              hourMinuteColor: MaterialStateColor.resolveWith(
+                                  (states) =>
+                                      states.contains(MaterialState.selected)
+                                          ? CustomColors.alarmRed
+                                          : Colors.white),
+                              dialBackgroundColor: CustomColors.sunYellow,
+                              dialHandColor: CustomColors.alarmRed,
+                              dialTextColor: MaterialStateColor.resolveWith(
+                                  (states) =>
+                                      states.contains(MaterialState.selected)
+                                          ? Colors.white
+                                          : Colors.black),
+                            ),
+                          ),
+                          child: child!,
+                        );
+                      },
+                    );
+
+                    if (pickedTime != null) {
+                      final now = DateTime.now();
+                      final DateTime selectedTime = DateTime(
+                        now.year,
+                        now.month,
+                        now.day,
+                        pickedTime.hour,
+                        pickedTime.minute,
+                      );
+                      vm.setAlarmTime(selectedTime);
+                    }
+                  },
+                  child: _TimeRow(
+                    icon: Icons.alarm,
+                    iconColor: CustomColors.alarmRed,
+                    background: CustomColors.alarmRed,
+                    timeText: vm.alarmString,
+                  ),
                 ),
 
                 const Spacer(),
