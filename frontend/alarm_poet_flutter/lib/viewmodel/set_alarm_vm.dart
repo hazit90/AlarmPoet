@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import '../model/location_service.dart';
 import '../model/sunrise_service.dart';
+import '../model/alarm_service.dart'; // <-- Import AlarmService
 import 'package:intl/intl.dart' show DateFormat;
 
 class SetAlarmVm extends ChangeNotifier {
   final LocationService _locationService = LocationService();
   final SunriseService _sunriseService = SunriseService();
+  final AlarmService _alarmService = AlarmService(); // <-- Add AlarmService
 
   String _locationName = "Fetching location...";
   DateTime _sunriseTime = DateTime.now().subtract(const Duration(hours: 1));
@@ -29,7 +31,31 @@ class SetAlarmVm extends ChangeNotifier {
 
   void setAlarmTime(DateTime alarmTime) {
     _alarmTime = alarmTime;
+    setAlarm(id: 2478);
     notifyListeners();
+  }
+
+  Future<void> setAlarm({
+    required int id,
+    String? title,
+    String? body,
+    String? payload,
+  }) async {
+    await _alarmService.setAlarm(
+      id: id,
+      dateTime: _alarmTime,
+      title: title,
+      body: body,
+      payload: payload,
+    );
+  }
+
+  Future<void> cancelAlarm(int id) async {
+    await _alarmService.cancelAlarm(id);
+  }
+
+  Future<void> cancelAllAlarms() async {
+    await _alarmService.cancelAllAlarms();
   }
 
   Future<void> _initializeLocation() async {
