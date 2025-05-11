@@ -17,6 +17,10 @@ func TestCreateAlarm(t *testing.T) {
 	if w.Code != http.StatusCreated {
 		t.Errorf("Expected status code %d, got %d", http.StatusCreated, w.Code)
 	}
+
+	if !strings.Contains(w.Body.String(), "poem") {
+		t.Errorf("Expected response to include 'poem', got %s", w.Body.String())
+	}
 }
 
 func TestListAlarms(t *testing.T) {

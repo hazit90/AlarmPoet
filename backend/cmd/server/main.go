@@ -1,9 +1,12 @@
 package main
 
 import (
-	"backend/internal/handlers"
-	"github.com/gorilla/mux"
+	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
+	"github.com/rohgupta/alarm/AlarmPoet/backend/internal/db"
+	"github.com/rohgupta/alarm/AlarmPoet/backend/internal/handlers"
 )
 
 // Package main is the entry point for the AlarmPoet backend server.
@@ -11,16 +14,18 @@ import (
 
 func main() {
 	// main initializes the HTTP server and starts listening for requests.
+
+	// Initialize the database
+	if err := db.InitDB(); err != nil {
+		log.Fatalf("Failed to initialize database: %v", err)
+	}
+
 	r := mux.NewRouter()
 
 	// Alarm routes
 	r.HandleFunc("/v1/alarms", handlers.CreateAlarm).Methods("POST")
 	r.HandleFunc("/v1/alarms", handlers.ListAlarms).Methods("GET")
-	r.HandleFunc("/v1/alarms/{alarm_id}", handlers.UpdateAlarm).Methods("PUT")
-	r.HandleFunc("/v1/alarms/{alarm_id}", handlers.DeleteAlarm).Methods("DELETE")
-
-	// Poem generation route
-	r.HandleFunc("/v1/poems/generate", handlers.GeneratePoem).Methods("POST")
+	r.HandleFunc("/v1/alarms/delete", handlers.DeleteAllAlarms).Methods("POST")
 
 	http.ListenAndServe(":8080", r)
 }
