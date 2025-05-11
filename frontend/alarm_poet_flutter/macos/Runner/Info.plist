@@ -32,5 +32,12 @@
 	<string>This app requires access to your location while in use to provide location-based features.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>This app requires access to your location at all times to provide continuous location-based functionality.</string>
+	<key>NSUserNotificationAlertStyle</key>
+	<string>alert</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 </dict>
 </plist>

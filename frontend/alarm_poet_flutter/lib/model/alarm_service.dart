@@ -1,9 +1,10 @@
 import 'dart:io' show Platform;
 import 'package:alarm/alarm.dart';
 import 'package:alarm/model/volume_settings.dart';
+import 'notification_service.dart';
 
 class AlarmService {
-  bool get _isSupportedPlatform => Platform.isAndroid || Platform.isIOS;
+  bool get _isMobilePlatform => Platform.isAndroid || Platform.isIOS;
 
   /// Schedules a new alarm at the specified [dateTime].
   /// [id] should be unique for each alarm.
@@ -23,8 +24,22 @@ class AlarmService {
     bool iOSBackgroundAudio = true,
     String? payload,
   }) async {
-    if (!_isSupportedPlatform) {
-      print('alarm service only supports android and ios');
+    if (!_isMobilePlatform) {
+      // Schedule a notification for non-mobile platforms
+      final now = DateTime.now();
+      final delay = dateTime.difference(now);
+      if (delay.isNegative) {
+        // If the time is in the past, do not schedule
+        return;
+      }
+      Future.delayed(delay, () {
+        NotificationService().showNotification(
+          id: id,
+          title: title ?? 'Alarm',
+          body: body ?? 'Your alarm is ringing!',
+          payload: payload,
+        );
+      });
       return;
     }
     final alarmSettings = AlarmSettings(
@@ -52,7 +67,8 @@ class AlarmService {
 
   /// Cancels the alarm with the given [id].
   Future<void> cancelAlarm(int id) async {
-    if (!_isSupportedPlatform) {
+    if (!_isMobilePlatform) {
+      // Optionally, you could cancel a scheduled notification here if you keep track of timers
       print('alarm service only supports android and ios');
       return;
     }
@@ -61,7 +77,7 @@ class AlarmService {
 
   /// Cancels all scheduled alarms.
   Future<void> cancelAllAlarms() async {
-    if (!_isSupportedPlatform) {
+    if (!_isMobilePlatform) {
       print('alarm service only supports android and ios');
       return;
     }
@@ -70,7 +86,7 @@ class AlarmService {
 
   /// Returns a list of all scheduled alarms.
   Future<List<AlarmSettings>> getAlarms() async {
-    if (!_isSupportedPlatform) {
+    if (!_isMobilePlatform) {
       print('alarm service only supports android and ios');
       return [];
     }
