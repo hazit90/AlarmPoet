@@ -2,23 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import '../model/location_service.dart';
 import '../model/sunrise_service.dart';
-import '../model/alarm_service.dart'; // <-- Import AlarmService
+import '../model/alarm_service.dart';
 import 'package:intl/intl.dart' show DateFormat;
+
+class AlarmData {
+  final int id;
+  final DateTime time;
+  final String? title;
+  final String? body;
+  final String? payload;
+
+  AlarmData({
+    required this.id,
+    required this.time,
+    this.title,
+    this.body,
+    this.payload,
+  });
+}
 
 class SetAlarmVm extends ChangeNotifier {
   final LocationService _locationService = LocationService();
   final SunriseService _sunriseService = SunriseService();
-  final AlarmService _alarmService = AlarmService(); // <-- Add AlarmService
+  final AlarmService _alarmService = AlarmService();
 
   String _locationName = "Fetching location...";
   DateTime _sunriseTime = DateTime.now().subtract(const Duration(hours: 1));
   DateTime _alarmTime = DateTime.now().subtract(const Duration(hours: 1));
   LocationData? _locationData;
+  final List<AlarmData> _alarms = [];
 
   String get locationName => _locationName;
   String get sunriseString => _formatTime(_sunriseTime);
   String get alarmString => _formatTime(_alarmTime);
   DateTime get alarmTime => _alarmTime;
+  List<AlarmData> get alarms => List.unmodifiable(_alarms);
 
   SetAlarmVm() {
     _initializeLocation();
@@ -40,22 +58,37 @@ class SetAlarmVm extends ChangeNotifier {
     String? title,
     String? body,
     String? payload,
+    DateTime? alarmTime, // <-- add this parameter
   }) async {
+    final DateTime timeToSet = alarmTime ?? _alarmTime;
     await _alarmService.setAlarm(
       id: id,
-      dateTime: _alarmTime,
+      dateTime: timeToSet,
       title: title,
       body: body,
       payload: payload,
     );
+
+    _alarms.add(AlarmData(
+      id: id,
+      time: timeToSet,
+      title: title,
+      body: body,
+      payload: payload,
+    ));
+    notifyListeners();
   }
 
   Future<void> cancelAlarm(int id) async {
     await _alarmService.cancelAlarm(id);
+    _alarms.removeWhere((alarm) => alarm.id == id);
+    notifyListeners();
   }
 
   Future<void> cancelAllAlarms() async {
     await _alarmService.cancelAllAlarms();
+    _alarms.clear();
+    notifyListeners();
   }
 
   Future<void> _initializeLocation() async {

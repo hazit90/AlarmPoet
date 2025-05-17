@@ -1,8 +1,11 @@
+import 'package:alarm_poet_flutter/view/poem_tags.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../static/themes.dart'; // ⬅️ already in your project
 import '../viewmodel/set_alarm_vm.dart'; // ⬅️ you’ll implement this VM
+import '../viewmodel/poem_gen_vm.dart'; // Add this import
+import 'alarms_list.dart'; // import the new widget
 
 /// Displays the “Set alarm” screen shown in the design.
 /// ─────────────────────────────────────────────────────────────────────────
@@ -17,196 +20,54 @@ class SetAlarmPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<SetAlarmVm>(
-      builder: (context, vm, _) {
-        return Scaffold(
-          // Full-screen coloured backdrop with the same radius used elsewhere.
-          backgroundColor: CustomColors.lightSkyBlue,
-          body: SafeArea(
-            child: Column(
-              children: [
-                // ─── Location ────────────────────────────────────────────────
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: Insets.large),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.location_on,
-                          size: 42, color: CustomColors.pinRed),
-                      const SizedBox(width: Insets.small),
-                      Flexible(
-                        child: Text(
-                          vm.locationName,
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium
-                              ?.copyWith(color: Colors.white),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: Insets.xxxLarge),
-
-                // ─── Sunrise card ───────────────────────────────────────────
-                _TimeRow(
-                  icon: Icons.wb_sunny,
-                  iconColor: CustomColors.sunYellow,
-                  background: CustomColors.sunYellow,
-                  timeText: vm.sunriseString,
-                ),
-
-                const SizedBox(height: Insets.huge),
-
-                // ─── Alarm card ─────────────────────────────────────────────
-                GestureDetector(
-                  onTap: () async {
-                    final TimeOfDay? pickedTime = await showTimePicker(
-                      context: context,
-                      initialTime: TimeOfDay.fromDateTime(vm.alarmTime),
-                      builder: (BuildContext context, Widget? child) {
-                        return Theme(
-                          data: Theme.of(context).copyWith(
-                            timePickerTheme: TimePickerThemeData(
-                              backgroundColor: CustomColors.lightSkyBlue,
-                              hourMinuteTextColor:
-                                  MaterialStateColor.resolveWith((states) =>
-                                      states.contains(MaterialState.selected)
-                                          ? Colors.white
-                                          : Colors.black),
-                              hourMinuteColor: MaterialStateColor.resolveWith(
-                                  (states) =>
-                                      states.contains(MaterialState.selected)
-                                          ? CustomColors.alarmRed
-                                          : Colors.white),
-                              dialBackgroundColor: CustomColors.sunYellow,
-                              dialHandColor: CustomColors.alarmRed,
-                              dialTextColor: MaterialStateColor.resolveWith(
-                                  (states) =>
-                                      states.contains(MaterialState.selected)
-                                          ? Colors.white
-                                          : Colors.black),
-                            ),
-                          ),
-                          child: child!,
-                        );
-                      },
-                    );
-
-                    if (pickedTime != null) {
-                      final now = DateTime.now();
-                      final DateTime selectedTime = DateTime(
-                        now.year,
-                        now.month,
-                        now.day,
-                        pickedTime.hour,
-                        pickedTime.minute,
-                      );
-                      vm.setAlarmTime(selectedTime);
-                    }
-                  },
-                  child: _TimeRow(
-                    icon: Icons.alarm,
-                    iconColor: CustomColors.alarmRed,
-                    background: CustomColors.alarmRed,
-                    timeText: vm.alarmString,
-                  ),
-                ),
-
-                const Spacer(),
-
-                // ─── Bottom action buttons ─────────────────────────────────
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                      Insets.large, 0, Insets.large, Insets.large),
-                  child: Row(
-                    children: [
-                      _ActionButton(
-                        label: 'At sunrise',
-                        onPressed: () => vm.setOffset(const Duration()),
-                      ),
-                      const SizedBox(width: Insets.medium),
-                      _ActionButton(
-                        label: '+1 hour',
-                        onPressed: () => vm.setOffset(const Duration(hours: 1)),
-                      ),
-                      const SizedBox(width: Insets.medium),
-                      _ActionButton(
-                        label: '-1 hour',
-                        onPressed: () =>
-                            vm.setOffset(const Duration(hours: -1)),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-/// Compact wrapper that pairs a large leading icon with a coloured card.
-class _TimeRow extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final Color background;
-  final String timeText;
-
-  const _TimeRow({
-    required this.icon,
-    required this.iconColor,
-    required this.background,
-    required this.timeText,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(icon, size: 88, color: iconColor),
-        const SizedBox(width: Insets.medium),
-        _TimeCard(
-          timeText: timeText,
-          background: background,
-        ),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => PoemGenVm()),
+        ChangeNotifierProvider(create: (_) => SetAlarmVm()),
       ],
-    );
-  }
-}
+      child: Consumer2<SetAlarmVm, PoemGenVm>(
+        builder: (context, alarmVm, poemVm, _) {
+          return Scaffold(
+            // Full-screen coloured backdrop with the same radius used elsewhere.
+            backgroundColor: CustomColors.lightSkyBlue,
+            body: SafeArea(
+              child: Column(
+                children: [
+                  // ─── Location ────────────────────────────────────────────────
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: Insets.large),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.location_on,
+                            size: 42, color: CustomColors.pinRed),
+                        const SizedBox(width: Insets.small),
+                        Flexible(
+                          child: Text(
+                            alarmVm.locationName,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
 
-/// Rounded-rectangle card that mimics the yellow/red boxes in the mock-up.
-class _TimeCard extends StatelessWidget {
-  final String timeText;
-  final Color background;
+                  const SizedBox(height: Insets.xxxLarge),
 
-  const _TimeCard({
-    required this.timeText,
-    required this.background,
-  });
+                  // ─── Alarms List ───────────────────────────────────────────
+                  const Expanded(child: AlarmsList()),
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 160,
-      height: 110,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.white, width: 2),
-      ),
-      child: Text(
-        timeText,
-        style: Theme.of(context)
-            .textTheme
-            .headlineMedium
-            ?.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+                  // // ─── Bottom pills that hold hashtags with poem generation
+                  PoemTags(),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }

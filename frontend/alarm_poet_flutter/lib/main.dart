@@ -1,5 +1,6 @@
 import 'package:alarm/alarm.dart';
 import 'package:alarm_poet_flutter/view/set_alarm_page.dart';
+import 'package:alarm_poet_flutter/viewmodel/poem_gen_vm.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'viewmodel/set_alarm_vm.dart';
@@ -19,6 +20,8 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(
+            create: (_) => PoemGenVm()), // Provide PoemGenVmPoemGenVm
         ChangeNotifierProvider(
             create: (_) => SetAlarmVm()), // Provide SetAlarmVm
       ],
