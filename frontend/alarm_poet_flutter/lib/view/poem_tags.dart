@@ -35,7 +35,7 @@ class _PoemTagsState extends State<PoemTags> {
       children: [
         Center(
           child: Text(
-            'set tags for poem generation. e.g. #sunrise #morning',
+            'set tags for poem generation. e.g. sunrise, morning',
             style: Theme.of(context)
                 .textTheme
                 .titleLarge
