@@ -4,3 +4,73 @@ metadata:
   name: backend
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      serviceAccountName: backend-service-account
+      initContainers:
+      - name: wait-for-mongodb
+        image: busybox
+        command: ["sh", "-c", "until nc -z mongodb 27017; do echo waiting for mongodb; sleep 2; done"]
+        resources:
+          requests:
+            memory: "16Mi"
+            cpu: "10m"
+          limits:
+            memory: "32Mi"
+            cpu: "20m"
+      containers:
+      - name: backend
+        image: quay.io/rohan47/backend:build8
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secrets
+              key: MONGO_INITDB_ROOT_USERNAME
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secrets
+              key: MONGO_INITDB_ROOT_PASSWORD
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secrets
+              key: MONGO_INITDB_DATABASE
+        - name: MONGODB_URI
+          value: "mongodb://$(DB_USER):$(DB_PASSWORD)@mongodb:27017/$(DB_NAME)?authSource=admin"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: backend-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: backend
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50

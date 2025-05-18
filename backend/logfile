@@ -1,0 +1,16 @@
+2025-05-11 17:31:06.541 IST [8916] LOG:  starting PostgreSQL 14.18 (Homebrew) on aarch64-apple-darwin24.4.0, compiled by Apple clang version 17.0.0 (clang-1700.0.13.3), 64-bit
+2025-05-11 17:31:06.546 IST [8916] LOG:  listening on IPv6 address "::1", port 5432
+2025-05-11 17:31:06.546 IST [8916] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2025-05-11 17:31:06.546 IST [8916] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2025-05-11 17:31:06.548 IST [8917] LOG:  database system was shut down at 2025-05-11 17:30:09 IST
+2025-05-11 17:31:06.551 IST [8916] LOG:  database system is ready to accept connections
+2025-05-11 17:44:07.921 IST [15582] ERROR:  invalid input syntax for type double precision: ""
+2025-05-11 17:44:07.921 IST [15582] CONTEXT:  unnamed portal parameter $2 = ''
+2025-05-11 17:44:07.921 IST [15582] STATEMENT:  INSERT INTO alarms (time, latitude, longitude, keywords, poem) VALUES ($1, $2, $3, $4, $5)
+2025-05-11 17:44:35.249 IST [15796] ERROR:  invalid input syntax for type double precision: ""
+2025-05-11 17:44:35.249 IST [15796] CONTEXT:  unnamed portal parameter $2 = ''
+2025-05-11 17:44:35.249 IST [15796] STATEMENT:  INSERT INTO alarms (time, latitude, longitude, keywords, poem) VALUES ($1, $2, $3, $4, $5)
+2025-05-12 14:46:33.909 IST [8916] LOG:  received smart shutdown request
+2025-05-12 14:46:33.930 IST [8916] LOG:  background worker "logical replication launcher" (PID 8923) exited with exit code 1
+2025-05-12 14:46:33.942 IST [8918] LOG:  shutting down
+2025-05-12 14:46:34.006 IST [8916] LOG:  database system is shut down
