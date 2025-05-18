@@ -16,26 +16,39 @@ import (
 // This file implements the poem generation logic using LLaMA 3.
 
 func getAPIKeyFromK8sSecret() (string, error) {
+	log.Println("getAPIKeyFromK8sSecret: Starting to fetch API key from Kubernetes secret")
+
 	config, err := rest.InClusterConfig()
 	if err != nil {
+		log.Printf("getAPIKeyFromK8sSecret: Failed to create in-cluster config: %v", err)
 		return "", fmt.Errorf("failed to create in-cluster config: %v", err)
 	}
 
+	log.Println("getAPIKeyFromK8sSecret: Successfully created in-cluster config")
+
 	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {
+		log.Printf("getAPIKeyFromK8sSecret: Failed to create Kubernetes client: %v", err)
 		return "", fmt.Errorf("failed to create Kubernetes client: %v", err)
 	}
 
+	log.Println("getAPIKeyFromK8sSecret: Successfully created Kubernetes client")
+
 	secret, err := clientset.CoreV1().Secrets("default").Get(context.Background(), "openai-api-key", metav1.GetOptions{})
 	if err != nil {
+		log.Printf("getAPIKeyFromK8sSecret: Failed to fetch secret: %v", err)
 		return "", fmt.Errorf("failed to fetch secret: %v", err)
 	}
 
+	log.Println("getAPIKeyFromK8sSecret: Successfully fetched secret")
+
 	apiKey, exists := secret.Data["api-key"]
 	if !exists {
+		log.Println("getAPIKeyFromK8sSecret: api-key not found in secret")
 		return "", fmt.Errorf("api-key not found in secret")
 	}
 
+	log.Println("getAPIKeyFromK8sSecret: Successfully retrieved API key")
 	return string(apiKey), nil
 }
 

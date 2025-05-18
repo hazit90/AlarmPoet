@@ -3,4 +3,10 @@ kind: Service
 metadata:
   name: backend
 spec:
-  type: ClusterIP
+  type: LoadBalancer
+  selector:
+    app: backend
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080

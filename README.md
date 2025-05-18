@@ -52,6 +52,27 @@ Next goals:
 - Implement timezone-aware alarm scheduling
 - Enhance poem generation logic with LLaMA 3 integration
 
+## Backend: Current Status and Requirements
+
+### Current Status
+- **Implemented Features:**
+  - REST API with endpoints for managing alarms and generating poems.
+  - Basic backend logic for alarm scheduling and poem generation.
+  - PostgreSQL database integration for storing alarms.
+  - Directory structure and initial Golang template files created.
+
+### Requirements
+- **Development:**
+  - Implement timezone-aware alarm scheduling.
+  - Enhance poem generation logic with LLaMA 3 integration.
+  - Add comprehensive unit and integration tests.
+- **Deployment:**
+  - Finalize and test the Dockerfile for the backend.
+  - Deploy the backend to Kubernetes using the provided manifests.
+  - Configure and test Helm charts for backend deployment.
+- **Optimization:**
+  - Improve resource allocation and scaling configurations in Kubernetes manifests.
+  - Optimize database queries for better performance.
 
 UI / Frontend: AlarmPoet
 

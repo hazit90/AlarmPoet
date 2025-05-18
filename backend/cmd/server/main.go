@@ -20,6 +20,9 @@ func main() {
 		log.Fatalf("Failed to initialize database: %v", err)
 	}
 
+	// Ensure the database connection is closed on shutdown
+	defer db.CloseDB()
+
 	r := mux.NewRouter()
 
 	// Alarm routes
